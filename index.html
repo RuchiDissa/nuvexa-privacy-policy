@@ -260,6 +260,51 @@
             font-size: 15px;
         }
     }
+
+    /* Language selector */
+    .language-control {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin: 0 auto 22px;
+        flex-wrap: wrap;
+    }
+    .language-control label {
+        color: var(--muted);
+        font-size: 14px;
+    }
+    #languageSelector {
+        appearance: auto;
+        max-width: 100%;
+        padding: 10px 14px;
+        color: var(--white);
+        background: var(--card);
+        border: 1px solid var(--accent);
+        border-radius: 10px;
+        font: inherit;
+        cursor: pointer;
+        outline: none;
+    }
+    #languageSelector:focus {
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+    }
+    #google_translate_element {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+    .goog-te-banner-frame,
+    .goog-te-balloon-frame {
+        display: none !important;
+    }
+    body {
+        top: 0 !important;
+    }
+
 </style>
 
 </head>
@@ -278,6 +323,31 @@
     <div class="brand">
         NUVEXA
     </div>
+
+    <div class="language-control">
+        <label for="languageSelector">🌐 Language / மொழி:</label>
+        <select id="languageSelector" aria-label="Choose webpage language">
+            <option value="en">English</option>
+            <option value="zh-CN">中文</option>
+            <option value="es">Español</option>
+            <option value="hi">हिन्दी</option>
+            <option value="ar">العربية</option>
+            <option value="pt">Português</option>
+            <option value="fr">Français</option>
+            <option value="ru">Русский</option>
+            <option value="ja">日本語</option>
+            <option value="de">Deutsch</option>
+            <option value="ko">한국어</option>
+            <option value="it">Italiano</option>
+            <option value="id">Bahasa Indonesia</option>
+            <option value="tr">Türkçe</option>
+            <option value="vi">Tiếng Việt</option>
+            <option value="th">ไทย</option>
+            <option value="si">සිංහල</option>
+            <option value="ta">தமிழ்</option>
+        </select>
+    </div>
+    <div id="google_translate_element" aria-hidden="true"></div>
 
     <h1>
         Privacy Policy
@@ -600,6 +670,44 @@
 </div>
 
 </footer>
+
+
+<script>
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,zh-CN,es,hi,ar,pt,fr,ru,ja,de,ko,it,id,tr,vi,th,si,ta',
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const languageSelector = document.getElementById('languageSelector');
+
+        languageSelector.addEventListener('change', function () {
+            const targetLanguage = this.value;
+            const tryToTranslate = function () {
+                const translateCombo = document.querySelector('.goog-te-combo');
+                if (!translateCombo) return false;
+
+                translateCombo.value = targetLanguage === 'en' ? '' : targetLanguage;
+                translateCombo.dispatchEvent(new Event('change', { bubbles: true }));
+                return true;
+            };
+
+            if (!tryToTranslate()) {
+                let attempts = 0;
+                const waitForWidget = window.setInterval(function () {
+                    attempts++;
+                    if (tryToTranslate() || attempts >= 30) {
+                        window.clearInterval(waitForWidget);
+                    }
+                }, 250);
+            }
+        });
+    });
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 </html>
